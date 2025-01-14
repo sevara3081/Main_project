@@ -1,6 +1,7 @@
 import requests
 import allure
 
+
 class InvalidTokenSearchAPI:
     """
     Класс для работы с API при использовании некорректного токена.
@@ -9,7 +10,6 @@ class InvalidTokenSearchAPI:
     def __init__(self, base_url):
         """
         Инициализация API клиента.
-
         :param base_url: Базовый URL API.
         """
         self.base_url = base_url
@@ -18,7 +18,6 @@ class InvalidTokenSearchAPI:
     def search_with_invalid_token(self, phrase, page=1, per_page=5):
         """
         Отправить запрос с некорректным токеном.
-
         :param phrase: Фраза для поиска.
         :param page: Номер страницы (по умолчанию 1).
         :param per_page: Количество элементов на странице (по умолчанию 5).

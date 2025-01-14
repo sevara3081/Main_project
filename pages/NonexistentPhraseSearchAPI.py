@@ -1,6 +1,7 @@
 import requests
 import allure
 
+
 class NonexistentPhraseSearchAPI:
     """
     Класс для работы с API при поиске с несуществующей фразой.
@@ -9,7 +10,6 @@ class NonexistentPhraseSearchAPI:
     def __init__(self, base_url, token):
         """
         Инициализация API клиента.
-
         :param base_url: Базовый URL API.
         :param token: Токен для авторизации.
         """
@@ -20,7 +20,6 @@ class NonexistentPhraseSearchAPI:
     def search_nonexistent_phrase(self, phrase, page=1, per_page=5):
         """
         Отправить запрос с несуществующей фразой.
-
         :param phrase: Фраза для поиска.
         :param page: Номер страницы (по умолчанию 1).
         :param per_page: Количество элементов на странице (по умолчанию 5).

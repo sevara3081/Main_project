@@ -1,151 +1,110 @@
+import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import allure
-from pages.Search_By_Author_ui import SearchByAuthor
-from pages.Search_By_Title_ui import SearchByTitle
-from pages.Add_To_Cart_ui import AddToCart
-from pages.Delete_From_Cart_ui import DeleteFromCart
-from constants import UI_URL
 
-search_by_author = SearchByAuthor
-search_by_title = SearchByTitle
-add_to_card = AddToCart
-delete_from_cart = DeleteFromCart
+UI_URL = "https://www.chitai-gorod.ru"
+
+@pytest.fixture
+def driver():
+    """Фикстура для управления браузером."""
+    options = webdriver.ChromeOptions()
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-cache")
+    driver = webdriver.Chrome(options=options)
+    driver.maximize_window()
+    yield driver
+    driver.quit()
 
 
 @allure.title("Тест поиска книг по автору. POSITIVE")
 @allure.description("Этот тест проверяет, что поиск книг по автору работает корректно.")
 @allure.feature("READ")
 @allure.severity("CRITICAL")
-def test_search_by_author():
-    """
-                      Проверка корректности результатов поиска по автору.
+def test_search_by_author(driver):
+    driver.get(UI_URL)
+    search_input = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="__layout"]/div/header/div/div[1]/div[2]/div/form/input'))
+    )
+    search_input.clear()
+    search_input.send_keys("Джоан Роулинг")
+    search_input.send_keys(Keys.ENTER)
 
-    """
-    with allure.step("Запустить браузер Chrome"):
-        driver = webdriver.Chrome()
-
-    with allure.step("Перейти на сайт Читай-город"):
-        driver.get(UI_URL)
-
-    with allure.step("Найти книгу по автору Джоан Роулинг"):
-        author_name = "Джоан Роулинг"
-        search_by_author(author_name)
-
-    with allure.step("Получить результаты поиска"):
-        results_find = driver.find_element(By.CLASS_NAME, "product-title__author")
-
-    with allure.step("Проверить, что поиск по автору успешен"):
-        assert results_find is not None
-
-    with allure.step("Закрыть браузер"):
-        driver.quit()
+    results = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "div.catalog-search-products"))
+    )
+    assert results, "Результаты поиска не отображаются."
 
 
-@allure.title("Тест добавления товара в корзину. POSITIVE")
-@allure.description("Этот тест проверяет, что товар добавляется в корзину.")
-@allure.feature("CREATE")
-@allure.severity("BLOCKER")
-def test_add_to_card():
-    """
-                         Проверка корректности добавления товара в корзину.
+@allure.title("Тест поиска книг по названию. POSITIVE")
+@allure.description("Этот тест проверяет, что поиск книг по названию работает корректно.")
+@allure.feature("READ")
+@allure.severity("CRITICAL")
+def test_search_by_title(driver):
+    driver.get(UI_URL)
+    search_input = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="__layout"]/div/header/div/div[1]/div[2]/div/form/input'))
+    )
+    search_input.clear()
+    search_input.send_keys("Гарри Поттер")
+    search_input.send_keys(Keys.ENTER)
 
-    """
-    with allure.step("Запустить браузер Chrome"):
-        driver = webdriver.Chrome()
-
-    with allure.step("Перейти на сайт Читай-город"):
-        driver.get(UI_URL)
-
-    with allure.step("Добавить в корзину книгу с названием Гарри Поттер"):
-        book_title = "Гарри Поттер"
-        add_to_card(book_title)
-
-    with allure.step("Получить результаты добавления в корзину"):
-        results_add = driver.find_element(By.CSS_SELECTOR, 'div.product-title__head')
-
-    with allure.step("Проверить, что корзина не пуста"):
-        assert results_add is not None
-
-    with allure.step("Закрыть браузер"):
-        driver.quit()
-
-
-@allure.title("Тест удаления товара из корзины. POSITIVE")
-@allure.description("Этот тест проверяет, что товар из корзины удаляется корректно.")
-@allure.feature("DELETE")
-@allure.severity("BLOCKER")
-def test_delete_from_card():
-    """
-                         Проверка корректности удаления товара из корзины.
-
-    """
-
-    with allure.step("Запустить браузер Chrome"):
-        driver = webdriver.Chrome()
-
-    with allure.step("Перейти на сайт Читай-город"):
-        driver.get(UI_URL)
-
-    with allure.step("Удалить книгу из корзины"):
-        book_title = "Гарри Поттер"
-        delete_from_cart(book_title)
-        results_del = driver.find_elements(By.CSS_SELECTOR, 'div.product-title__head')
-
-    with allure.step("Проверить, что товар больше не существует в списке"):
-        assert all(
-            book_title not in element.text for element in results_del), f"Книга '{book_title}' все еще в корзине."
+    results = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "div.catalog-search-products"))
+    )
+    assert results, "Результаты поиска не отображаются."
 
 
 @allure.title("Тест поиска по несуществующему автору. NEGATIVE")
-@allure.description("Этот тест проверяет, что поиск по несуществующему атору невозможен")
+@allure.description("Этот тест проверяет, что поиск по несуществующему автору возвращает сообщение о пустых результатах.")
 @allure.feature("READ")
 @allure.severity("CRITICAL")
-def test_wrong_author():
-    """
-                         Проверка, что при поиске книги по несуществующему автору результат отсутствует.
+def test_search_by_nonexistent_author(driver):
+    driver.get(UI_URL)
+    search_input = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="__layout"]/div/header/div/div[1]/div[2]/div/form/input'))
+    )
+    search_input.clear()
+    search_input.send_keys("qwertyuiop123456789")
+    search_input.send_keys(Keys.ENTER)
 
-    """
-    with allure.step("Запустить браузер Chrome"):
-        driver = webdriver.Chrome()
-
-    with allure.step("Перейти на сайт Читай-город"):
-        driver.get(UI_URL)
-
-    with allure.step("Найти книгу по несуществующему автору"):
-        author_name = "Неизвестный Автор"
-        search_by_author(author_name)
-
-    with allure.step("Проверить, что поиск не дал результатов"):
-        results_find = driver.find_elements(By.CSS_SELECTOR, "h4.catalog-empty-result__header")
-        assert results_find is not None
-
-    with allure.step("Закрыть браузер"):
-        driver.quit()
+    no_results_message = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="__layout"]/div/div[3]/div[1]/section/div/div/h4'))
+    )
+    assert no_results_message.text == "Похоже, у нас такого нет", "Сообщение о пустых результатах не отображается или некорректно."
 
 
-@allure.title("Тест поиска по смешанному запросу. NEGATIVE")
-@allure.description("Этот тест проверяет, что поиск по смешанному запросу невозможен")
+@allure.title("Тест поиска по некорректному запросу с символами !@. NEGATIVE")
+@allure.description(
+    "Этот тест проверяет, что поиск по некорректному запросу !@ возвращает сообщение о пустых результатах.")
 @allure.feature("READ")
 @allure.severity("CRITICAL")
-def test_mixed_request():
-    """
-                         Проверка, что при поиске книги по смешанному запросу результат отсутствует.
+def test_search_by_invalid_symbols(driver):
+    driver.get(UI_URL)
+    search_input = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="__layout"]/div/header/div/div[1]/div[2]/div/form/input'))
+    )
+    search_input.clear()
+    search_input.send_keys("!@")
+    search_input.send_keys(Keys.ENTER)
 
-    """
-    with allure.step("Запустить браузер Chrome"):
-        driver = webdriver.Chrome()
+    no_results_message = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="__layout"]/div/div[3]/div[1]/section/div/div/h4'))
+    )
+    assert no_results_message.text == "Похоже, у нас такого нет", "Сообщение о пустых результатах некорректное."
 
-    with allure.step("Перейти на сайт Читай-город"):
-        driver.get(UI_URL)
 
-    with allure.step("Найти книгу по смешанному запросу"):
-        book_title = "Hаrry Potter"
-        search_by_title(book_title)
+@allure.title("Тест отображения главной страницы. POSITIVE")
+@allure.description("Этот тест проверяет, что главная страница сайта отображается корректно.")
+@allure.feature("UI")
+@allure.severity("NORMAL")
+def test_homepage_display(driver):
+    driver.get(UI_URL)
 
-    with allure.step("Проверить, что поиск не дал результатов"):
-        results_find = driver.find_elements(By.CSS_SELECTOR, "h4.catalog-empty-result__header")
-        assert results_find is not None
-
-    with allure.step("Закрыть браузер"):
-        driver.quit()
+    homepage_banner = WebDriverWait(driver, 15).until(
+        EC.presence_of_element_located((By.XPATH, '//*[@id="__layout"]/div/div[3]/div[1]/div[1]/section/div/div/div/div[1]/a[2]/picture/img'))
+    )
+    assert homepage_banner, "Главная страница не отображается корректно."

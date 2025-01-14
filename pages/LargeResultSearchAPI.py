@@ -1,6 +1,7 @@
 import requests
 import allure
 
+
 class LargeResultSearchAPI:
     """
     Класс для работы с API при запросе большого количества результатов.
@@ -9,7 +10,6 @@ class LargeResultSearchAPI:
     def __init__(self, base_url, token):
         """
         Инициализация API клиента.
-
         :param base_url: Базовый URL API.
         :param token: Токен для авторизации.
         """
@@ -20,7 +20,6 @@ class LargeResultSearchAPI:
     def search_large_results(self, phrase, page=1, per_page=50):
         """
         Отправить запрос с большим количеством результатов.
-
         :param phrase: Фраза для поиска.
         :param page: Номер страницы (по умолчанию 1).
         :param per_page: Количество элементов на странице (по умолчанию 50).

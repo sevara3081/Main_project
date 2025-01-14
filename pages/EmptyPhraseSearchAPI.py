@@ -1,6 +1,7 @@
 import requests
 import allure
 
+
 class EmptyPhraseSearchAPI:
     """
     Класс для работы с API при поиске с пустой фразой.
@@ -9,7 +10,6 @@ class EmptyPhraseSearchAPI:
     def __init__(self, base_url, token):
         """
         Инициализация API клиента.
-
         :param base_url: Базовый URL API.
         :param token: Токен для авторизации.
         """
@@ -20,7 +20,6 @@ class EmptyPhraseSearchAPI:
     def search_empty_phrase(self, page=1, per_page=5):
         """
         Отправить запрос с пустой фразой.
-
         :param page: Номер страницы (по умолчанию 1).
         :param per_page: Количество элементов на странице (по умолчанию 5).
         :return: Кортеж из кода статуса ответа и тела ответа в формате JSON.

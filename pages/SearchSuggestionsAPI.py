@@ -1,6 +1,7 @@
 import requests
 import allure
 
+
 class SearchSuggestionsAPI:
     """
     Класс для работы с API получения поисковых подсказок в интернет-магазине Читай-город.
@@ -9,7 +10,6 @@ class SearchSuggestionsAPI:
     def __init__(self, base_url, token):
         """
         Инициализация API клиента.
-
         :param base_url: Базовый URL API.
         :param token: Токен для авторизации.
         """
@@ -20,7 +20,6 @@ class SearchSuggestionsAPI:
     def get_suggestions(self, phrase, page=1, per_page=5):
         """
         Получить список поисковых подсказок.
-
         :param phrase: Фраза для поиска.
         :param page: Номер страницы (по умолчанию 1).
         :param per_page: Количество элементов на странице (по умолчанию 5).
